@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f4f7fb" />
+  <meta name="description" content="Mobile-first gross wage comparison app for two jobs." />
+  <title>Gross Wage Comparison App</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --panel:#ffffff;
+      --panel-2:#f8fafc;
+      --ink:#18212b;
+      --muted:#5d6b7a;
+      --line:#d8e0ea;
+      --accent:#1f6feb;
+      --good:#157347;
+      --good-soft:#e8f6ee;
+      --warn:#b26a00;
+      --warn-soft:#fff4df;
+      --bad:#b42318;
+      --bad-soft:#fff0ee;
+      --shadow:0 10px 28px rgba(17,24,39,.08);
+      --radius:18px;
+      --input-h:52px;
+      --maxw:720px;
+      --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+
+    html{
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
+
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:linear-gradient(180deg,#f6f9fd 0%, #eef3f9 100%);
+      color:var(--ink);
+      line-height:1.45;
+    }
+
+    .app{
+      max-width:var(--maxw);
+      margin:0 auto;
+      padding:16px 14px 104px;
+    }
+
+    .hero,
+    .card,
+    .results,
+    .note{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .hero{
+      padding:18px 16px;
+      margin-bottom:14px;
+    }
+
+    h1{
+      margin:0 0 8px;
+      font-size:1.4rem;
+      line-height:1.15;
+      letter-spacing:-0.02em;
+    }
+
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:.97rem;
+    }
+
+    .grid{
+      display:grid;
+      gap:14px;
+    }
+
+    .card{
+      padding:16px;
+    }
+
+    .card h2{
+      margin:0 0 12px;
+      font-size:1.05rem;
+      line-height:1.2;
+    }
+
+    .field{
+      margin-bottom:12px;
+    }
+
+    .field:last-child{
+      margin-bottom:0;
+    }
+
+    label{
+      display:block;
+      margin:0 0 6px;
+      font-size:.92rem;
+      font-weight:600;
+      color:var(--ink);
+    }
+
+    .hint{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:.82rem;
+    }
+
+    input{
+      width:100%;
+      height:var(--input-h);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:0 14px;
+      font:inherit;
+      color:var(--ink);
+      background:#fff;
+      outline:none;
+      transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    input:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 4px rgba(31,111,235,.14);
+    }
+
+    input[type="number"]{
+      appearance:textfield;
+      -moz-appearance:textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button{
+      -webkit-appearance:none;
+      margin:0;
+    }
+
+    .results{
+      padding:16px;
+      margin-top:14px;
+    }
+
+    .results h2{
+      margin:0 0 12px;
+      font-size:1.05rem;
+    }
+
+    .summary{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      margin-bottom:14px;
+      background:var(--panel-2);
+    }
+
+    .summary.good{
+      background:var(--good-soft);
+      border-color:#b7dfc7;
+    }
+
+    .summary.warn{
+      background:var(--warn-soft);
+      border-color:#f0d49d;
+    }
+
+    .summary.bad{
+      background:var(--bad-soft);
+      border-color:#f0c2bc;
+    }
+
+    .summary-title{
+      margin:0 0 6px;
+      font-size:1rem;
+      font-weight:700;
+    }
+
+    .summary-text{
+      margin:0;
+      font-size:.97rem;
+    }
+
+    .metrics{
+      display:grid;
+      gap:10px;
+    }
+
+    .metric{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:#fff;
+    }
+
+    .metric-label{
+      margin:0 0 4px;
+      font-size:.86rem;
+      color:var(--muted);
+    }
+
+    .metric-value{
+      margin:0;
+      font-size:1.15rem;
+      font-weight:700;
+      letter-spacing:-0.02em;
+      word-break:break-word;
+    }
+
+    .metric-sub{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:.86rem;
+    }
+
+    .note{
+      margin-top:14px;
+      padding:14px 16px;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    .actions{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:20;
+      padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:rgba(244,247,251,.92);
+      backdrop-filter:blur(12px);
+      border-top:1px solid rgba(216,224,234,.9);
+    }
+
+    .actions-inner{
+      max-width:var(--maxw);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    button{
+      min-height:54px;
+      border:none;
+      border-radius:16px;
+      font:inherit;
+      font-weight:700;
+      cursor:pointer;
+      padding:0 16px;
+      transition:transform .04s ease, opacity .15s ease, box-shadow .15s ease;
+    }
+
+    button:active{
+      transform:translateY(1px);
+    }
+
+    .btn-primary{
+      background:var(--accent);
+      color:#fff;
+      box-shadow:0 10px 24px rgba(31,111,235,.25);
+    }
+
+    .btn-secondary{
+      background:#fff;
+      color:var(--ink);
+      border:1px solid var(--line);
+    }
+
+    .error-text{
+      margin:10px 0 0;
+      color:var(--bad);
+      font-size:.9rem;
+      font-weight:600;
+    }
+
+    @media (min-width:700px){
+      .app{
+        padding:20px 18px 110px;
+      }
+
+      .grid{
+        grid-template-columns:1fr 1fr;
+      }
+
+      h1{
+        font-size:1.65rem;
+      }
+
+      .metrics{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <h1>Gross Wage Comparison</h1>
+      <p class="sub">
+        Compare two jobs by weekly and monthly gross pay difference. Overtime above 40 hours is calculated at 1.5× the base hourly rate.
+      </p>
+    </section>
+
+    <section class="grid" aria-label="Job inputs">
+      <article class="card">
+        <h2>Job A</h2>
+
+        <div class="field">
+          <label for="nameA">Job name</label>
+          <input id="nameA" type="text" value="Job A" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label for="rateA">Hourly rate ($)</label>
+          <input id="rateA" type="number" inputmode="decimal" min="0" step="0.01" value="25.00" />
+        </div>
+
+        <div class="field">
+          <label for="hoursA">Average weekly hours</label>
+          <input id="hoursA" type="number" inputmode="decimal" min="0" step="0.1" value="40" />
+          <p class="hint">Overtime above 40 hours is paid at 1.5× base rate.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Job B</h2>
+
+        <div class="field">
+          <label for="nameB">Job name</label>
+          <input id="nameB" type="text" value="Job B" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label for="rateB">Hourly rate ($)</label>
+          <input id="rateB" type="number" inputmode="decimal" min="0" step="0.01" value="30.00" />
+        </div>
+
+        <div class="field">
+          <label for="hoursB">Average weekly hours</label>
+          <input id="hoursB" type="number" inputmode="decimal" min="0" step="0.1" value="40" />
+          <p class="hint">Overtime above 40 hours is paid at 1.5× base rate.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="results" aria-live="polite">
+      <h2>Results</h2>
+
+      <div id="summaryBox" class="summary">
+        <p id="summaryTitle" class="summary-title">Ready to compare</p>
+        <p id="summaryText" class="summary-text">Tap Calculate to compare weekly and monthly gross pay.</p>
+      </div>
+
+      <div class="metrics">
+        <article class="metric">
+          <p class="metric-label" id="weeklyDiffLabel">Weekly difference</p>
+          <p class="metric-value" id="weeklyDiff">—</p>
+          <p class="metric-sub">Gross pay difference per week</p>
+        </article>
+
+        <article class="metric">
+          <p class="metric-label" id="monthlyDiffLabel">Monthly difference</p>
+          <p class="metric-value" id="monthlyDiff">—</p>
+          <p class="metric-sub">Uses 4.3 weeks per month</p>
+        </article>
+
+        <article class="metric">
+          <p class="metric-label" id="jobAWeeklyLabel">Job A weekly gross</p>
+          <p class="metric-value" id="jobAWeekly">—</p>
+          <p class="metric-sub" id="jobAWeeklySub">Supporting detail</p>
+        </article>
+
+        <article class="metric">
+          <p class="metric-label" id="jobAMonthlyLabel">Job A monthly gross</p>
+          <p class="metric-value" id="jobAMonthly">—</p>
+          <p class="metric-sub">Weekly gross × 4.3</p>
+        </article>
+
+        <article class="metric">
+          <p class="metric-label" id="jobBWeeklyLabel">Job B weekly gross</p>
+          <p class="metric-value" id="jobBWeekly">—</p>
+          <p class="metric-sub" id="jobBWeeklySub">Supporting detail</p>
+        </article>
+
+        <article class="metric">
+          <p class="metric-label" id="jobBMonthlyLabel">Job B monthly gross</p>
+          <p class="metric-value" id="jobBMonthly">—</p>
+          <p class="metric-sub">Weekly gross × 4.3</p>
+        </article>
+      </div>
+
+      <p id="errorText" class="error-text" hidden></p>
+    </section>
+
+    <section class="note">
+      Gross wage comparison only. This does not include taxes, deductions, benefits, bonuses, shift differentials, or other compensation factors.
+    </section>
+  </main>
+
+  <div class="actions" role="group" aria-label="App actions">
+    <div class="actions-inner">
+      <button id="calculateBtn" class="btn-primary" type="button">Calculate</button>
+      <button id="resetBtn" class="btn-secondary" type="button">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    const defaults = {
+      nameA: "Job A",
+      rateA: 25.00,
+      hoursA: 40,
+      nameB: "Job B",
+      rateB: 30.00,
+      hoursB: 40
+    };
+
+    const els = {
+      nameA: document.getElementById("nameA"),
+      rateA: document.getElementById("rateA"),
+      hoursA: document.getElementById("hoursA"),
+      nameB: document.getElementById("nameB"),
+      rateB: document.getElementById("rateB"),
+      hoursB: document.getElementById("hoursB"),
+      calculateBtn: document.getElementById("calculateBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      summaryBox: document.getElementById("summaryBox"),
+      summaryTitle: document.getElementById("summaryTitle"),
+      summaryText: document.getElementById("summaryText"),
+      weeklyDiff: document.getElementById("weeklyDiff"),
+      monthlyDiff: document.getElementById("monthlyDiff"),
+      jobAWeeklyLabel: document.getElementById("jobAWeeklyLabel"),
+      jobAWeekly: document.getElementById("jobAWeekly"),
+      jobAMonthlyLabel: document.getElementById("jobAMonthlyLabel"),
+      jobAMonthly: document.getElementById("jobAMonthly"),
+      jobBWeeklyLabel: document.getElementById("jobBWeeklyLabel"),
+      jobBWeekly: document.getElementById("jobBWeekly"),
+      jobBMonthlyLabel: document.getElementById("jobBMonthlyLabel"),
+      jobBMonthly: document.getElementById("jobBMonthly"),
+      jobAWeeklySub: document.getElementById("jobAWeeklySub"),
+      jobBWeeklySub: document.getElementById("jobBWeeklySub"),
+      errorText: document.getElementById("errorText")
+    };
+
+    function parsePositiveNumber(value) {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : NaN;
+    }
+
+    function formatMoney(value) {
+      return `$${value.toFixed(2)}`;
+    }
+
+    function setError(message) {
+      els.errorText.hidden = !message;
+      els.errorText.textContent = message || "";
+    }
+
+    function clearSummaryClass() {
+      els.summaryBox.classList.remove("good", "warn", "bad");
+    }
+
+    function getWeeklyPay(rate, hours) {
+      const regularHours = Math.min(hours, 40);
+      const overtimeHours = Math.max(hours - 40, 0);
+      return (regularHours * rate) + (overtimeHours * rate * 1.5);
+    }
+
+    function calculate() {
+      setError("");
+      clearSummaryClass();
+
+      const nameA = els.nameA.value.trim() || "Job A";
+      const nameB = els.nameB.value.trim() || "Job B";
+      const rateA = parsePositiveNumber(els.rateA.value);
+      const hoursA = parsePositiveNumber(els.hoursA.value);
+      const rateB = parsePositiveNumber(els.rateB.value);
+      const hoursB = parsePositiveNumber(els.hoursB.value);
+
+      if (rateA <= 0 || rateB <= 0 || hoursA < 0 || hoursB < 0 || Number.isNaN(hoursA) || Number.isNaN(hoursB)) {
+        els.summaryTitle.textContent = "Enter valid values";
+        els.summaryText.textContent = "Hourly rate must be greater than zero and weekly hours must be zero or greater.";
+        setError("Please enter valid hourly rates and weekly hours for both jobs.");
+        return;
+      }
+
+      const weeklyA = getWeeklyPay(rateA, hoursA);
+      const weeklyB = getWeeklyPay(rateB, hoursB);
+      const monthlyA = weeklyA * 4.3;
+      const monthlyB = weeklyB * 4.3;
+
+      const weeklyDifference = Math.abs(weeklyA - weeklyB);
+      const monthlyDifference = Math.abs(monthlyA - monthlyB);
+
+      els.jobAWeeklyLabel.textContent = `${nameA} weekly gross`;
+      els.jobAMonthlyLabel.textContent = `${nameA} monthly gross`;
+      els.jobBWeeklyLabel.textContent = `${nameB} weekly gross`;
+      els.jobBMonthlyLabel.textContent = `${nameB} monthly gross`;
+
+      els.jobAWeekly.textContent = formatMoney(weeklyA);
+      els.jobAMonthly.textContent = formatMoney(monthlyA);
+      els.jobBWeekly.textContent = formatMoney(weeklyB);
+      els.jobBMonthly.textContent = formatMoney(monthlyB);
+
+      els.weeklyDiff.textContent = formatMoney(weeklyDifference);
+      els.monthlyDiff.textContent = formatMoney(monthlyDifference);
+
+      const overtimeA = Math.max(hoursA - 40, 0);
+      const overtimeB = Math.max(hoursB - 40, 0);
+
+      els.jobAWeeklySub.textContent = overtimeA > 0
+        ? `${hoursA.toFixed(1).replace(/\.0$/, "")} hrs includes ${overtimeA.toFixed(1).replace(/\.0$/, "")} overtime hrs`
+        : `${hoursA.toFixed(1).replace(/\.0$/, "")} hrs, no overtime`;
+      els.jobBWeeklySub.textContent = overtimeB > 0
+        ? `${hoursB.toFixed(1).replace(/\.0$/, "")} hrs includes ${overtimeB.toFixed(1).replace(/\.0$/, "")} overtime hrs`
+        : `${hoursB.toFixed(1).replace(/\.0$/, "")} hrs, no overtime`;
+
+      const epsilon = 0.0000001;
+
+      if (Math.abs(weeklyA - weeklyB) < epsilon) {
+        els.summaryBox.classList.add("warn");
+        els.summaryTitle.textContent = "Both jobs pay the same";
+        els.summaryText.textContent =
+          `${nameA} and ${nameB} have the same weekly and monthly gross pay based on the entered rates and hours.`;
+      } else if (weeklyA > weeklyB) {
+        els.summaryBox.classList.add("good");
+        els.summaryTitle.textContent = `${nameA} pays more`;
+        els.summaryText.textContent =
+          `${nameA} pays ${formatMoney(weeklyDifference)} more per week and ${formatMoney(monthlyDifference)} more per month than ${nameB}.`;
+      } else {
+        els.summaryBox.classList.add("bad");
+        els.summaryTitle.textContent = `${nameB} pays more`;
+        els.summaryText.textContent =
+          `${nameB} pays ${formatMoney(weeklyDifference)} more per week and ${formatMoney(monthlyDifference)} more per month than ${nameA}.`;
+      }
+    }
+
+    function resetApp() {
+      els.nameA.value = defaults.nameA;
+      els.rateA.value = defaults.rateA.toFixed(2);
+      els.hoursA.value = defaults.hoursA;
+      els.nameB.value = defaults.nameB;
+      els.rateB.value = defaults.rateB.toFixed(2);
+      els.hoursB.value = defaults.hoursB;
+
+      clearSummaryClass();
+      setError("");
+
+      els.summaryTitle.textContent = "Ready to compare";
+      els.summaryText.textContent = "Tap Calculate to compare weekly and monthly gross pay.";
+
+      els.weeklyDiff.textContent = "—";
+      els.monthlyDiff.textContent = "—";
+
+      els.jobAWeeklyLabel.textContent = "Job A weekly gross";
+      els.jobAMonthlyLabel.textContent = "Job A monthly gross";
+      els.jobBWeeklyLabel.textContent = "Job B weekly gross";
+      els.jobBMonthlyLabel.textContent = "Job B monthly gross";
+
+      els.jobAWeekly.textContent = "—";
+      els.jobAMonthly.textContent = "—";
+      els.jobBWeekly.textContent = "—";
+      els.jobBMonthly.textContent = "—";
+
+      els.jobAWeeklySub.textContent = "Supporting detail";
+      els.jobBWeeklySub.textContent = "Supporting detail";
+    }
+
+    els.calculateBtn.addEventListener("click", calculate);
+    els.resetBtn.addEventListener("click", resetApp);
+
+    calculate();
+  </script>
+</body>
+</html>
